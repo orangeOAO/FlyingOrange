@@ -1,10 +1,14 @@
 <launch>
 	
 	<!-- Include the MAVROS node with SITL and Gazebo -->
-	<include file="$(find px4)/launch/mavros_posix_sitl.launch">
+    <!-- <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/iris_obstacle.world"/> -->
+	<include file="$(find offb)/launch/mavros_posix_sitl.launch">
 		
 	</include>
 
+	<!-- <include file="$(find offb)/launch/obstacle.launch">
+		
+	</include> -->
 	<!-- Our node to control the drone -->
 	<node pkg="offb" type="test_fly" name="test_fly" required="true" output="screen" />
 
