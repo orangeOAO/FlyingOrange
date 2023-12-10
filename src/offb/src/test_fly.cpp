@@ -9,6 +9,7 @@
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
+#include <tf2/LinearMath/Quaternion.h>
 
 mavros_msgs::State current_state;
 void state_cb(const mavros_msgs::State::ConstPtr& msg){
@@ -39,9 +40,16 @@ int main(int argc, char **argv)
     }
 
     geometry_msgs::PoseStamped pose;
-    pose.pose.position.x = 5;
-    pose.pose.position.y = 1;
-    pose.pose.position.z = 2;
+    
+    
+    double orientationX, orientationY, orientationZ, orientationW;
+ 
+    //We just make the robot has fixed orientation. Normally quaternion needs to be normalized, which means x^2 + y^2 + z^2 +w^2 = 1
+    double fixedOrientation = 0;
+    orientationX = fixedOrientation;
+    orientationY = fixedOrientation ;
+    orientationZ = 1;
+    orientationW = fixedOrientation; 
 
     //send a few setpoints before starting
     for(int i = 100; ros::ok() && i > 0; --i){
@@ -58,9 +66,22 @@ int main(int argc, char **argv)
 
     ros::Time last_request = ros::Time::now();
 
+    double angle = M_PI;
+    tf2::Quaternion quat;
+    quat.setRPY(0, 0, angle);
+
     while(ros::ok()){
+        pose.pose.position.x = 10;
+        pose.pose.position.y = 1;
+        pose.pose.position.z = 2;
+        
+        pose.pose.orientation.x = quat.x();
+        pose.pose.orientation.y = quat.y();
+        pose.pose.orientation.z = quat.z();
+        pose.pose.orientation.w = quat.w();
+        ROS_INFO("the orientation(x,y,z,w) is %f , %f, %f, %f", pose.pose.orientation.x, pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w);
         if( current_state.mode != "OFFBOARD" &&
-            (ros::Time::now() - last_request > ros::Duration(5.0))){
+            (ros::Time::now() - last_request > ros::Duration(1.0))){
             if( set_mode_client.call(offb_set_mode) &&
                 offb_set_mode.response.mode_sent){
                 ROS_INFO("Offboard enabled");
@@ -68,7 +89,7 @@ int main(int argc, char **argv)
             last_request = ros::Time::now();
         } else {
             if( !current_state.armed &&
-                (ros::Time::now() - last_request > ros::Duration(5.0))){
+                (ros::Time::now() - last_request > ros::Duration(3.0))){
                 if( arming_client.call(arm_cmd) &&
                     arm_cmd.response.success){
                     ROS_INFO("Vehicle armed");

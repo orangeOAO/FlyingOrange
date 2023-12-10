@@ -2,9 +2,9 @@
 	
 	<!-- Include the MAVROS node with SITL and Gazebo -->
     <!-- <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/iris_obstacle.world"/> -->
-	<include file="$(find offb)/launch/mavros_posix_sitl.launch">
-		
-	</include>
+	<include file="$(find offb)/launch/mavros_posix_sitl.launch"></include>
+	<!-- <include file="$(find offb)/launch/obstacle.launch"></include> -->
+	
 
 	<!-- <include file="$(find offb)/launch/obstacle.launch">
 		
